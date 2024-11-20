@@ -381,7 +381,7 @@
 
         const addTmdbContr = (movieData, ev) => {
             let my_movies = JSON.parse(localStorage.my_movies);
-            const movieExists = my_movies.some(movie => movie.title === movieData.title && (movie.director === movieData.director || movie.director === null));
+            const movieExists = my_movies.some(movie => movie.title === movieData.title || (movie.director === movieData.director || movie.director === null));
             const addButton = ev.target;
             addButton.disabled = true;
 
