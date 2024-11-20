@@ -1,4 +1,4 @@
-https://github.com/sniegockajulia/Netflix-2.0
+https://github.com/sniegockajulia/Keyword-in-Netflix-2.0
 
 ## Practice Description
 In the second part of this activity, a new functionality will be added that allows the application to connect with The Movie Database (TMDb) API to search for movies and work with external data. This section will help students understand how to interact with REST APIs, how to send and receive HTTP requests, and how to integrate data from external sources into their web applications. Additionally, students will learn to manage API key security and implement advanced features that enhance the user experience. 
