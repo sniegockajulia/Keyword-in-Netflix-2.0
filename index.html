@@ -66,14 +66,18 @@
        // DATA MODEL
 
        let initial_movies = [
-        { title: "Superlópez", director: "Javier Ruiz Caldera", thumbnail: "files/superlopez.png", release_date: null, vote_average: null, overview: null, original_language: null },
-        { title: "Jurassic Park", director: "Steven Spielberg", thumbnail: "files/jurassicpark.png", release_date: null, vote_average: null, overview: null, original_language: null },
-        { title: "Interstellar", director: "Christopher Nolan", thumbnail: "files/interstellar.png", release_date: null, vote_average: null, overview: null, original_language: null }
+        { tmdb_id: null, title: "Superlópez", director: "Javier Ruiz Caldera", thumbnail: "files/superlopez.png", release_date: null, vote_average: null, overview: null, original_language: null },
+        { tmdb_id: null, title: "Jurassic Park", director: "Steven Spielberg", thumbnail: "files/jurassicpark.png", release_date: null, vote_average: null, overview: null, original_language: null },
+        { tmdb_id: null, title: "Interstellar", director: "Christopher Nolan", thumbnail: "files/interstellar.png", release_date: null, vote_average: null, overview: null, original_language: null }
     ];
 
-
         localStorage.my_movies = localStorage.my_movies || JSON.stringify(initial_movies);
+        let my_movies = JSON.parse(localStorage.my_movies);
+        
+        let initial_keywords = [];
+        localStorage.my_keywords = localStorage.my_keywords || JSON.stringify(initial_keywords);
 
+        
         const options = {
             method: 'GET',
             headers: {
@@ -81,6 +85,7 @@
                 Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNjc2NTg1ZTY2N2QzZjQyOGNiMWFkMTZmOTFkOGY0MiIsIm5iZiI6MTczMTUxOTU2Ni4yODU3NDEzLCJzdWIiOiI2NzMyMzM1NTBkNzU4MDQwZWI0YjFlMzIiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.OYo3fzuXa2FH-YVyxaLezUdr2whuIziWBJDytKyAG0Y'
             }
         };
+
 
         // VIEWS
         const indexView = (movies) => {
@@ -115,6 +120,7 @@
                         <!-----------------------Insert here "Add" and "Reset" buttons---------------->
                         <button class="new">Add</button>
                         <button class="reset">Reset</button>
+                        <button class="my-keywords">View My Keywords</button>
                     </div>
                     <div class="field" id="field-search">
                         <input type="text" id="search-query" placeholder="Search for movies">
@@ -126,7 +132,6 @@
 
             return view;
         };
-
 
         const editView = (i, movie) => {
             return `<h2>Edit Movie </h2>
@@ -171,7 +176,6 @@
                `;
         }
 
-
         const showView = (movie) => {
             // Complete: generate HTML with movie information
             // ...
@@ -193,7 +197,6 @@
                 <button class="index">Back</button>
              </div>`;
         }
-
 
         const newView = () => {
             // Complete: generate form to create new movie
@@ -244,12 +247,13 @@
                     view += `
                         <div class="movie" id="result-movie">
                             <div class="movie-img">
-                                <img class="add-tmdb-image" data-my-id="${i}" src="https://image.tmdb.org/t/p/w200${movie.poster_path}" onerror="this.src='files/noimage.png'"/>
+                                <img class="add-from-api-image" data-my-id="${i}" src="https://image.tmdb.org/t/p/w200${movie.poster_path}" onerror="this.src='files/noimage.png'"/>
                             </div>
                             <div class="title" title="${movie.title || "<em>No title</em>"}">${movie.title || "<em>No title</em>"}</div>
                             <div class="release-date"><strong>${movie.release_date || "<em>No release date</em>"}</strong></div>
                             <div class="actions">
-                                <button class="add-tmdb" data-my-id="${i}">Add</button>
+                                <button class="add-from-api" data-my-id="${i}">Add</button>
+                                <button class="keywords" data-my-id="${i}">Keywords</button>
                             </div>
                         </div>`;
                 });
@@ -258,13 +262,47 @@
             return view;
         };
 
+        const searchView = (my_movies, results) => {
+            document.getElementById('main').innerHTML = indexView(my_movies)+resultsView(results);
+        };
+
+        const keywordsView = (processedKeywords) => {
+            let view = `<h2>Keywords</h2>
+                        <div class="keyword-list">`;
+            processedKeywords.forEach((keyword, i) => {
+                view += `<div class="keyword-item">
+                            ${keyword} 
+                            <button class="add-keyword" data-keyword="${keyword}">Add to my list</button>
+                        </div>`;
+            });
+            view += `</div>
+                    <button class="search-view">Back</button>`;
+            return view   
+        };
+
+        const myKeywordsView = (my_keywords) => {
+            let view = `<h2>My Keywords</h2>
+                        <div class="keyword-list">`;
+            if (my_keywords.length === 0) {
+                view += `<p>No keywords in your list.</p>`;
+            } else {
+                my_keywords.forEach(keyword => {
+                    view += `<div class="keyword-item">
+                                ${keyword}
+                                <button class="remove-keyword" data-keyword="${keyword}">Remove</button>
+                            </div>`;
+                });
+            }
+            view += `</div>
+                    <button class="index">Back</button>`;
+            return view;
+        };
 
         // CONTROLLERS 
         const indexContr = () => {
          let my_movies = JSON.parse(localStorage.my_movies);
          document.getElementById('main').innerHTML = indexView(my_movies);
          };
-
 
         const showContr = (i) => {
             // Complete: controller that shows the showView(movie)
@@ -286,6 +324,7 @@
             // ...
             let my_movies = JSON.parse(localStorage.my_movies);
             let newMovie = {
+                tmdb_id: null,
                 title: document.getElementById('new-title').value,
                 director: document.getElementById('new-director').value,
                 thumbnail: document.getElementById('new-thumbnail').value,
@@ -320,7 +359,6 @@
             document.getElementById('main').innerHTML = editView(i, movie);
         };
 
-
         const updateContr = (i) => {
             let my_movies = JSON.parse(localStorage.my_movies);
             my_movies[i].title    = document.getElementById('edit-title').value;
@@ -335,7 +373,6 @@
             indexContr();
         };
 
-
         const deleteContr = (i) => {
             // Complete: controller that updates the model by deleting the selected movie
             // Generates confirmation dialog: Accept button returns true, Cancel false
@@ -347,11 +384,11 @@
             }
         };
 
-
         const resetContr = () => {
             // Complete: controller that resets the model saved in localStorage with the original movies
             if (confirm("Are you sure you want to reset the database?")) {
                 localStorage.my_movies = JSON.stringify(initial_movies);
+                localStorage.my_keywords = JSON.stringify(initial_keywords);
                 indexContr();
             }
         };
@@ -369,8 +406,7 @@
                 .then(data => {
                     document.getElementById('spinner').style.display = 'none';
                     const my_movies = JSON.parse(localStorage.my_movies);
-                    const searchView = resultsView(data.results);
-                    document.getElementById('main').innerHTML = indexView(my_movies) + searchView;
+                    document.getElementById('main').innerHTML = indexView(my_movies) + resultsView(data.results);
                     tmdbMovies = data.results;
                 })
                 .catch(error => {
@@ -379,9 +415,9 @@
                 });
         };
 
-        const addTmdbContr = (movieData, ev) => {
+        const addFromAPIContr = (movieData, ev) => {
             let my_movies = JSON.parse(localStorage.my_movies);
-            const movieExists = my_movies.some(movie => movie.title === movieData.title && (movie.director === movieData.director || movie.director === null));
+            const movieExists = my_movies.some(movie => movie.tmdb_id === movieData.id);
             const addButton = ev.target;
             addButton.disabled = true;
 
@@ -389,6 +425,7 @@
                 alert("This movie is already in your list.");
             } else {
                 const newMovie = {
+                    tmdb_id: movieData.id,
                     title: movieData.title,
                     director: null,
                     thumbnail: `https://image.tmdb.org/t/p/w200${movieData.poster_path}`,
@@ -405,16 +442,71 @@
                 const successMessage = document.getElementById("success-message");
                 successMessage.style.display = "block";
                 setTimeout(() => {
-                    document.getElementById('main').innerHTML = indexView(my_movies)+resultsView(tmdbMovies);
+                    searchView(my_movies, tmdbMovies);
                     const successMessage = document.getElementById("success-message");
                     successMessage.style.display = "block";
                 }, 500);
                 setTimeout(() => {
-                    document.getElementById('main').innerHTML = indexView(my_movies)+resultsView(tmdbMovies);
+                    searchView(my_movies, tmdbMovies);
                     const successMessage = document.getElementById("success-message");
                     successMessage.style.display = "none";
                 }, 2000);
             }
+        };
+
+        const processKeywords = (keywords) => {
+            const processedKeywords = [];
+            for (const keyword of keywords) {
+                const cleanedKeyword = keyword.name
+                    .replace(/[^a-zñáéíóú0-9 ]+/igm, "") // Remove special characters
+                    .trim()                              // Remove extra spaces
+                    .toLowerCase();                      // Normalize to lowercase
+                if (cleanedKeyword.length > 0) {
+                    processedKeywords.push(cleanedKeyword);
+                }
+            }
+            processedKeywords.sort();
+            processedKeywords.shift();
+            return processedKeywords;
+        };
+
+        const addKeywordToList = (keyword) => {
+            let myKeywords = JSON.parse(localStorage.getItem('my_keywords') || '[]');
+            if (!myKeywords.includes(keyword)) {
+                myKeywords.push(keyword);
+                myKeywords.sort();
+                localStorage.setItem('my_keywords', JSON.stringify(myKeywords));
+                alert("Keyword added to your custom list!");
+            } else {
+                alert("This keyword is already in your list.");
+            }
+        };
+
+        const removeKeywordContr = (keyword) => {
+            let myKeywords = JSON.parse(localStorage.getItem('my_keywords') || '[]');
+            myKeywords = myKeywords.filter(k => k !== keyword);
+            localStorage.setItem('my_keywords', JSON.stringify(myKeywords));
+            myKeywordsContr();
+        };
+
+        const myKeywordsContr = () => {
+            let my_keywords = JSON.parse(localStorage.getItem('my_keywords') || '[]');
+            document.getElementById('main').innerHTML = myKeywordsView(my_keywords);
+        };
+
+        const keywordsContr = (movieId) => {
+            fetch(`https://api.themoviedb.org/3/movie/${movieId}/keywords`, options)
+                .then(response => response.json())
+                .then(data => {
+                    const keywords = data.keywords || [];
+                    const processedKeywords = processKeywords(keywords);
+                    document.getElementById('main').innerHTML = keywordsView(processedKeywords);
+                    window.scrollTo(0, 0);
+                })
+                .catch(err => {
+                    alert("Error fetching keywords.");
+                    console.error(err);
+                });
         };
 
 
@@ -432,9 +524,17 @@
             else if (matchEvent(ev, '.create')) createContr();
             else if (matchEvent(ev, '.delete')) deleteContr (myId(ev));
             else if (matchEvent(ev, '.reset')) resetContr();
+            else if (matchEvent(ev, '.search-view')) {
+                searchView(my_movies,tmdbMovies);
+                window.scrollTo(0, 0);
+            }
             else if (matchEvent(ev, '.search')) searchContr(document.getElementById('search-query').value);
-            else if (matchEvent(ev, '.add-tmdb')) addTmdbContr(tmdbMovies[myId(ev)],ev);
-            else if (matchEvent(ev, '.add-tmdb-image')) document.querySelectorAll('.add-tmdb')[myId(ev)].click();
+            else if (matchEvent(ev, '.add-from-api')) addFromAPIContr(tmdbMovies[myId(ev)],ev);
+            else if (matchEvent(ev, '.add-from-api-image')) document.querySelectorAll('.add-from-api')[myId(ev)].click();
+            else if (matchEvent(ev, '.keywords')) keywordsContr(tmdbMovies[myId(ev)].id);
+            else if (matchEvent(ev, '.add-keyword')) addKeywordToList(ev.target.dataset.keyword);     
+            else if (matchEvent(ev, '.my-keywords')) myKeywordsContr();
+            else if (matchEvent(ev, '.remove-keyword')) removeKeywordContr(ev.target.dataset.keyword);
         })
 
         document.addEventListener("keydown", function (event) {
