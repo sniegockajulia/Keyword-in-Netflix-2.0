@@ -1,15 +1,10 @@
 https://github.com/sniegockajulia/Keyword-in-Netflix-2.0
 
-## Practice Description
-In the second part of this activity, a new functionality will be added that allows the application to connect with The Movie Database (TMDb) API to search for movies and work with external data. This section will help students understand how to interact with REST APIs, how to send and receive HTTP requests, and how to integrate data from external sources into their web applications. Additionally, students will learn to manage API key security and implement advanced features that enhance the user experience. 
+## Tasks for the Third Part
+Implement the Keywords View: Create a new view, keywordsView(movieId), that displays the keywords of a selected movie. Include buttons to add each keyword to the user's custom list. The view should be visually clear and easy to use.
+Process the Keywords: Implement the processKeywords(keywords) function to clean and organize the keywords before displaying them in the interface. This function should handle special characters appropriately and normalize the keywords.
+Create a Custom Keyword List: Implement the addKeywordToList(keyword) functionality that allows users to add keywords to their custom list. Create the myKeywordsView() to display the custom list and allow keywords to be removed if necessary. This view should allow users to efficiently manage their list with ease.
+Update the Router: Add the necessary new actions to the router to manage events related to keywords and the custom list. Ensure that all functionalities are well-integrated and accessible to the user.
 
-This second part of the exercise will allow students to work with HTTP requests, process responses in JSON format, and learn how to effectively integrate external data. It will also provide an opportunity to handle errors and exceptions in API requests and learn how to design a more robust and complete user experience. Upon completing this part of the exercise, students will have an application with significantly expanded functionality, capable of connecting to external services to enrich the available information and improve user interaction.
-
-## Tasks
-
-Implement the Search View: Create a new searchView() that includes a text field and a search button. Ensure the interface is clear and user-friendly, and that the view handles cases where no valid search terms are entered.
-Add the Search Functionality: Implement the searchContr(query) controller to connect with the TMDb API and retrieve results. Handle network and API errors appropriately, and provide clear messages to the user if no results are found or technical issues arise.
-Display Search Results: Create the resultsView(results) to display the movies found in the API. The view should be attractive and allow easy navigation of the results, with relevant information and clear buttons to add the movies to the local database.
-Add Movies to the Local Database: Implement the addFromAPIContr(movie) controller to allow users to add a movie from the results to the local database. Ensure data is validated before adding, avoid duplicates, and confirm the operation's success to the user.
-Update the Router: Add the necessary new actions to the router to handle the new buttons and events, ensuring that the search and movie addition functionalities are well-integrated into the overall application flow.
-
+## Summary of the Third Part
+This third part of the exercise will provide students with the opportunity to work with textual data, apply regular expressions, and develop advanced text manipulation skills. Students will learn to analyze and process information obtained from an API and create a custom list that enhances the user experience. Additionally, they will gain a deeper understanding of how keywords and metadata can improve search and personalization in an application. By the end of this part of the exercise, students will have created an application that can extract, analyze, and personalize keywords associated with movies, thereby improving user interaction and personalization capabilities. This will result in a richer user experience tailored to individual interests, allowing users to interact more meaningfully with the available content.
