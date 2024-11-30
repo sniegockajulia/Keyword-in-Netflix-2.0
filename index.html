@@ -121,13 +121,6 @@
                         <button class="new">Add</button>
                         <button class="reset">Reset</button>
                         <button class="my-keywords">View My Keywords</button>
-                    </div>
-                    <div class="field" id="field-search">
-                        <input type="text" id="search-query" placeholder="Search for movies">
-                        <button class="search" id="search-button">Search</button>
-                        <div id="spinner" style="display:none;">
-                            <div class="spinner"></div>
-                        </div>
                     </div>`;
 
             return view;
@@ -240,10 +233,7 @@
         const resultsView = (results) => {
             let view = `<h2>Search Results</h2>`;
             
-            if (results.length === 0) {
-                view += `<p>No results found.</p>`;
-            } else {
-                results.forEach((movie, i) => {
+            results.forEach((movie, i) => {
                     view += `
                         <div class="movie" id="result-movie">
                             <div class="movie-img">
@@ -257,13 +247,19 @@
                             </div>
                         </div>`;
                 });
-            }
 
             return view;
         };
 
-        const searchView = (my_movies, results) => {
-            document.getElementById('main').innerHTML = indexView(my_movies)+resultsView(results);
+        const searchView = () => {
+            view =  `<div class="field" id="field-search">
+                        <input type="text" id="search-query" placeholder="Search for movies">
+                        <button class="search" id="search-button">Search</button>
+                        <div id="spinner" style="display:none;">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>`;
+            return view;
         };
 
         const keywordsView = (processedKeywords) => {
@@ -301,7 +297,7 @@
         // CONTROLLERS 
         const indexContr = () => {
          let my_movies = JSON.parse(localStorage.my_movies);
-         document.getElementById('main').innerHTML = indexView(my_movies);
+         document.getElementById('main').innerHTML = indexView(my_movies)+searchView();
          };
 
         const showContr = (i) => {
@@ -406,8 +402,12 @@
                 .then(data => {
                     document.getElementById('spinner').style.display = 'none';
                     const my_movies = JSON.parse(localStorage.my_movies);
-                    document.getElementById('main').innerHTML = indexView(my_movies) + resultsView(data.results);
+                    if (data.results.length === 0) {
+                        document.getElementById('main').innerHTML = indexView(my_movies) + searchView() + `<p>No results found.</p>`;
+                    } else {
+                    document.getElementById('main').innerHTML = indexView(my_movies) + searchView() + resultsView(data.results);
                     tmdbMovies = data.results;
+                    }
                 })
                 .catch(error => {
                     document.getElementById('spinner').style.display = 'none';
@@ -442,12 +442,12 @@
                 const successMessage = document.getElementById("success-message");
                 successMessage.style.display = "block";
                 setTimeout(() => {
-                    searchView(my_movies, tmdbMovies);
+                    document.getElementById('main').innerHTML = indexView(my_movies)+searchView()+resultsView(tmdbMovies);
                     const successMessage = document.getElementById("success-message");
                     successMessage.style.display = "block";
                 }, 500);
                 setTimeout(() => {
-                    searchView(my_movies, tmdbMovies);
+                    document.getElementById('main').innerHTML = indexView(my_movies)+searchView()+resultsView(tmdbMovies);
                     const successMessage = document.getElementById("success-message");
                     successMessage.style.display = "none";
                 }, 2000);
@@ -525,7 +525,7 @@
             else if (matchEvent(ev, '.delete')) deleteContr (myId(ev));
             else if (matchEvent(ev, '.reset')) resetContr();
             else if (matchEvent(ev, '.search-view')) {
-                searchView(my_movies,tmdbMovies);
+                document.getElementById('main').innerHTML = indexView(my_movies)+searchView()+resultsView(tmdbMovies);
                 window.scrollTo(0, 0);
             }
             else if (matchEvent(ev, '.search')) searchContr(document.getElementById('search-query').value);
